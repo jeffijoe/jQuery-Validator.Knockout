@@ -101,6 +101,12 @@ We also need a viewmodel.
       };
 ```
 
+And of course, apply bindings.
+
+```javascript
+    ko.applyBindings(new ViewModel());
+```
+
   1. We define our viewmodel, and create our validation context. This is the context that is being bound with `data-bind="jqValidation: validationContext"`
   2. We define our validation options in the validation context construction, the options are the same as you would pass to `.Validate` if not using Knockout.
   3. We added a click-handler for a button, and trigger the validation on our context. This means - yes, you guessed it, you can have **multiple validation contexts** in a single viewmodel.
