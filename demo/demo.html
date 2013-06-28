@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Demo</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+
+    <!-- The all-important validator.. -->
+    <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.Validator.js"></script>
+    <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.IsEmpty.js"></script>
+
+    <!-- KO Bindings.. -->
+    <script src="../src/jQuery-Validator.Knockout.js"></script>
+
+    <style type="text/css">
+        .error {
+            border: 1px solid red;
+        }
+
+        input {
+            width: 500px;
+            border: 1px solid #AAA;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Signup for awesome.</h1>
+
+    <!-- Define our validation context -->
+    <div data-bind="jqValidation: validationContext"><!-- validationContext is the property in the current binding context (currently the root viewmodel) -->
+
+        <!-- Username -->
+        <div>
+            <span>Username:</span>
+            <input type="text" data-bind="value: username" data-required="true" />
+        </div>
+        <br />
+        <!-- Password -->
+        <div>
+            <span>Password</span>
+            <input type="password" 
+                data-bind="value: password" 
+                data-required="true" 
+                data-lengthreq="4-16" 
+                data-msg_empty="Password is required too."
+                data-msg_lengthreq="Password must be between $MINLEN$ and $MAXLEN$ characters long." />
+            <div></div>
+        </div>
+        <br />
+        <div>
+            <button data-bind="click: signup">Register</button>
+        </div>
+
+        <!-- All validation errors - personally I wont need it, but hey.. -->
+        <div data-bind="foreach: validationErrors">
+            <div data-bind="text: $data"></div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function ViewModel() {
+            var self = this;
+
+            // Refer to jQuery-Validator documentation,
+            // configuration is exactly the same. Plugins are usable, too.
+            self.validationContext = ko.jqValidation({
+                returnBool:false, // We want more details of our validation result.
+                useInlineErrors: true, // Use inline errors
+                errorClass: 'error', // Apply error class
+                msg_empty: 'My friend, this just wont do.', // Global empty message.
+                noInlineErrors: "*[type='password']" // Password fields should not show inline errors.
+            });
+            
+            self.validationErrors = ko.observableArray([]);
+
+            self.username = ko.observable();
+            self.password = ko.observable();
+
+            self.signup = function () {
+                // Validate.
+                var validationResult = self.validationContext.Validate();
+                if (validationResult.valid) {
+                    alert("Validated successfully. Yay!");
+                    return;
+                }
+
+                // Oh boy, you're in troubleeeeee!
+                self.validationErrors(validationResult.messages);
+            };
+        };
+
+        ko.applyBindings(new ViewModel());
+    </script>
+</body>
+</html>
