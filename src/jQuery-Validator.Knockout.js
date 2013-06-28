@@ -10,7 +10,7 @@
  * Dependencies: 
     - jQuery 
     - jQuery.IsEmpty + jQuery-Validator 
-        (both found at https://github.com/Livesys/jQuery-Validator)
+        (both found at https://github.com/jeffijoe/jQuery-Validator)
     - KnockoutJS, obviously.
 
  * Usage: See demos.
