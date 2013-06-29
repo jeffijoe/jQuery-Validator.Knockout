@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A wee bit more advanced demo.</title>
+
+    <!-- Some fancy font, too.. -->
+    <link href='http://fonts.googleapis.com/css?family=Orienta' rel='stylesheet' type='text/css'>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+
+    <!-- The all-important validator.. -->
+    <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.IsEmpty.js"></script>
+    <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.Validator.js"></script>
+
+    <!-- KO Bindings.. -->
+    <script src="../src/jQuery-Validator.Knockout.js"></script>
+
+    <!-- .. Oh to hell with it, add some Bootstrap! Hosting courtesy of http://www.bootstrapcdn.com/ -->
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        body{
+            font-family: "Orienta", Arial,Helvetica,Sans-Serif;
+            background-color: #f5f5f5;
+        }
+
+        input.error {
+            border-color: #B94A48;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+        }
+
+        tr > td {
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <div class="container">
+        <!-- Page Heading. -->
+        <div class="row span12">
+            <h1>Todo's</h1>
+            <p>
+                This is just a quick demo of how you can use the validation binding in different contexts.
+
+            </p>
+            <p>
+                The idea is that each row should have it's own validation context. In our case, it's just
+                a single input field per row.
+            </p>
+            <p>
+                We want to ensure that, when the text is empty, we remove the todo entirely. This means the value of the textfield is not required, but
+                when there <strong>actually is a value present</strong>, we want to ensure it meets our quality standard: alteast 4 characters.
+            </p>
+            <p>To edit a todo, doubleclick the content text.</p>
+        </div>
+
+        <!-- Todo's -->
+        <div class="row span10">
+            <div class="btn-group" style="margin-bottom:20px;">
+                <button class="btn" data-bind="click: addTodo">
+                    <i class="icon icon-plus"></i>
+                    Add new
+                </button>
+            </div>
+
+            <table class="table">
+                <tbody data-bind="foreach: todos">
+                    <!-- Initializes the validation context - each row gets its own context. -->
+                    <tr data-bind="jqValidation: validationContext">
+                        <td>
+                            <button class="btn btn-mini" data-bind="click: $parent.removeTodo">
+                                <i class="icon icon-remove-sign"></i>
+                            </button>
+                        </td>
+
+                        <!-- ko ifnot: editing -->
+                        <td width="500" data-bind="text: content, event: { dblclick: editing.bind(null,!editing()) }"></td>
+                        <!-- /ko -->
+
+                        <!-- ko if: editing -->
+                        <td width="500">
+                            <div class="input-append">
+                                <input placeholder="What needs to be done?" type="text" data-bind="value: content" data-validate="true" data-lengthreq="4" style="width:400px;" />
+                                <button class="btn" data-bind="click: $parent.saveTodo" title="Validate usefulness">
+                                    <i class="icon icon-ok"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <!--/ko-->
+
+                        <td data-bind="text: created"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Todo
+        function Todo(text) {
+            this.content = ko.observable(text || "");
+            this.created = new Date();
+            this.editing = ko.observable(false);
+
+            // This is where we define our context for each individual todo.
+            this.validationContext = ko.jqValidation({
+                useInlineErrors: true, // Show error info in the field itself
+                errorClass: "error", // Apply .error to the field when ínvalid.
+                msg_lengthreq: "Make it substantial.. atleast $MINLEN$ characters." // Min-length message.
+            });
+        }
+
+        // Viewmodel
+        function TodosViewModel() {
+            var self = this;
+            
+            self.todos = ko.observableArray([
+                new Todo("Make todos thing work"),
+                new Todo("Add validation")
+            ]);
+
+            self.addTodo = function () {
+                var newTodo = new Todo();
+                newTodo.editing(true);
+                self.todos.unshift(newTodo);
+            };
+
+            self.saveTodo = function (todo) {
+                // This is the magic..
+                var isValid = todo.validationContext.Validate();
+                if (isValid) {
+                    todo.editing(false);
+                }
+
+                // If the text is empty (this is allowed, remember?)
+                // remove it from the list.
+                if (todo.content().trim() == "") {
+                    self.todos.remove(todo);
+                }
+            };
+
+            self.removeTodo = function (todo) {
+                self.todos.remove(todo);
+            };
+        };
+
+        ko.applyBindings(new TodosViewModel());
+    </script>
+
+</body>
+</html>
