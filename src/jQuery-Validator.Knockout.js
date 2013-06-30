@@ -47,7 +47,7 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var $elem = $(element),
                 validationCtx = valueAccessor();
-            validationCtx.containerElement = $(element);
+            validationCtx.containerElement = $elem;
         }
     };
 })(jQuery,ko);
