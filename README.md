@@ -18,7 +18,6 @@ You will need to include some scripts..
 ```html
     <!-- The all-important validator.. -->
     <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.Validator.js"></script>
-    <script src="https://rawgithub.com/jeffijoe/jQuery-Validator/master/Src/jQuery.IsEmpty.js"></script>
 
     <!-- KO Bindings.. -->
     <script src="../src/jQuery-Validator.Knockout.js"></script>
